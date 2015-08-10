@@ -9,7 +9,7 @@
   '[[tailrecursion/boot.task    "2.2.4"]
     [tailrecursion/hoplon       "5.10.24"]
     [exicon/hoplon5-semantic-ui "1.10.2-SNAPSHOT"]
-    [cljsjs/hsforms "0.1.0-0"]]
+    #_[cljsjs/hubspot-forms "0.1.0-SNAPSHOT"]]
   :out-path     "resources/public"
   :src-paths    #{"src/hl" "src/cljs"})
 
