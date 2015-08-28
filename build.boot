@@ -1,27 +1,28 @@
-#!/usr/bin/env boot
-
-#tailrecursion.boot.core/version "2.5.1"
-
 (set-env!
-  :project      'homepage
-  :version      "0.1.0-SNAPSHOT"
+  :project 'hoplon-hubspot-form-example
+  :version "0.1.0-SNAPSHOT"
   :dependencies
-  '[[tailrecursion/boot.task    "2.2.4"]
-    [tailrecursion/hoplon       "5.10.24"]
-    [exicon/hoplon5-semantic-ui "1.10.2-SNAPSHOT"]
-    #_[cljsjs/hubspot-forms "0.1.0-SNAPSHOT"]]
-  :out-path     "resources/public"
-  :src-paths    #{"src/hl" "src/cljs"})
+  '[[tailrecursion/boot-hoplon "0.1.3"]
+    [tailrecursion/hoplon "6.0.0-alpha7"]
+    [pandeiro/boot-http "0.6.3"]
+    [adzerk/boot-cljs "1.7.48-3"]
+    [cljsjs/boot-cljsjs "0.5.0" :scope "test"]]
+  :source-paths #{"src"}
+  :resource-paths #{"assets"})
 
-;; Static resources (css, images, etc.):
-(add-sync! (get-env :out-path) #{"assets"})
+(require
+  '[tailrecursion.boot-hoplon :refer [hoplon prerender]]
+  '[pandeiro.boot-http :refer [serve]]
+  '[adzerk.boot-cljs :refer [cljs]]
+  '[cljsjs.boot-cljsjs :refer [from-cljsjs]])
 
-(require '[tailrecursion.hoplon.boot :refer :all]
-         '[tailrecursion.castra.task :as c])
+(task-options!
+  speak {:theme "ordinance"}
+  from-cljsjs {:profile :development}
+  hoplon {:pretty-print true}
+  cljs {:optimizations :advanced
+        :source-map true
+        :compiler-options {:pseudo-names true}})
 
-(def server (c/castra-dev-server [] :port 8000))
-
-(deftask dev
-  "Build homepage for development."
-  []
-  (comp (watch) (hoplon {:prerender false}) server))
+(deftask dev []
+  (comp (watch) (serve) (from-cljsjs) (hoplon) (cljs) (prerender) (speak)))

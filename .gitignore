@@ -4,11 +4,9 @@ pom.xml.asc
 /lib/
 /classes/
 /target/
-/resources/
 /checkouts/
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
 .lein-failures
 .nrepl-port
-.boot/

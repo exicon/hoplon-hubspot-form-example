@@ -1,0 +1,39 @@
+(page "index.html")
+
+(defn append-head [elem] (-> (js/$ "head") (aget 0) (.appendChild elem)))
+
+(defn async-script [& {:keys [onload onerror] :as opts}]
+  (let [attrs (dissoc opts :onload :onerror)
+        script-defaults (script :async true
+                                :charset "utf-8"
+                                :type "text/javascript")]
+    (set! (.-onload script-defaults) onload)
+    (set! (.-onerror script-defaults) onerror)
+    (with-init! (append-head (script-defaults attrs)))))
+
+(def hs-portal-id "511335")
+(def hs-form-example-id "75a9222d-e214-4a89-a778-97de1f9c5ef9")
+
+(defn create-hubspot-form [custom-opts]
+  (let [default-opts {:css "" :portalId hs-portal-id}
+        effective-opts (merge default-opts custom-opts)]
+    (.. js/hbspt -forms (create (clj->js effective-opts)))))
+
+(defn create-contact-us-form []
+  (create-hubspot-form {:target "#hs-form-example"
+                        :cssClass "ui small form basic segment"
+                        :submitButtonClass "ui submit teal button"
+                        :errorMessageClass "ui error message"
+                        :formId hs-form-example-id}))
+
+(async-script :src "//js.hsforms.net/forms/v2.js"
+              :onload create-contact-us-form
+              :onerror #(pr :WTF))
+
+(html
+  (head
+    (title "HubSpot form example"))
+  (body
+    (h1 "HubSpot form example")
+    (div :id "hs-form-example"
+         (h2 "<hubspot form should appear here>"))))
