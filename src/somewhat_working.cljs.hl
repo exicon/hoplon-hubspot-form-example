@@ -1,0 +1,37 @@
+(page "somewhat-working.html")
+
+(def ^:private hubspot-forms-to-load (atom []))
+
+(defn load-hubspot-form [opts]
+  (swap! hubspot-forms-to-load conj (merge {:css ""} opts)))
+
+(defn hubspot-forms
+  "Load hubspot form API, then create forms registered by `load-hubspot-form`."
+  []
+  (with-init!
+    (js/jQuery.getScript
+      "//js.hsforms.net/forms/v2.js"
+      #(doseq [{:keys [target] :as opts} @hubspot-forms-to-load]
+         (print "Loading HubSpot form" target)
+         (js/hbspt.forms.create (clj->js opts))))))
+
+(load-hubspot-form
+  {:target "#hs-newsletter-form"
+   :portalId 511335
+   :formId "1492e5ad-c59f-4cb7-aa33-1375cffa1722"})
+
+(when-not prerendering? (hubspot-forms))
+
+(html
+  (head
+    (title (str "somewhat-working"
+                (when prerendering? " (prerendered)")))
+    (link :href "app.css" :rel "stylesheet"))
+  (body
+    (h1 "Hello, HubSpot!")
+    (h2 "No thank-you message after submit")
+    (div :id "hs-newsletter-form"
+         "Loading HubSpot form...")
+    (p "Also see: "
+       (a :href "./"
+          "Minified error"))))
